@@ -1,7 +1,7 @@
 # margin-calc
 Calculate the margin loan amount you can afford to take out given previous dividend income.
 
-## How to Use
+## How to Use:
 This calculator is divided into three parts:
 1. Margin Calculator - Calculate the margin loan you can take out in order to pay off the interest every month with your previous dividends. It is strongly recommended to take out a loan smaller than the recommended in order to pay back the loan interest and principal. The following parts of the calculator will assist you in choosing the optimal margin loan amount.
 2. Interest Calculator - Confirm the loan amount you wish to take on margin, and view the yearly, monthly, and daily interest charges given the interest rate you previously provided. Again, it is strongly recommended that you take out a loan smaller than the recommended in order to pay back the interest and principal. This amount can be changed, however you must press the button to resubmit the form and recalculate the interest payments. 
