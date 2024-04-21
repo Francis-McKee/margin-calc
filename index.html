@@ -126,8 +126,7 @@
             var price = parseFloat(document.getElementById("price").value);
             var apy = parseFloat(document.getElementById("apy").value);
 
-            var numShares = confirmLoanAmount / price;
-            var annualDividends = numShares * (apy / 100);
+            var annualDividends = price * (apy / 100) * confirmLoanAmount / price;
             var monthlyDividends = annualDividends / 12;
 
             var annualDividendsDisplay = document.getElementById("annualDividendsDisplay");
