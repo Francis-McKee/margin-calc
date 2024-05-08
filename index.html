@@ -58,7 +58,6 @@
 
     <div id="yearlyInterestDisplay"></div>
     <div id="monthlyInterestDisplay"></div>
-    <div id="dailyInterestDisplay"></div>
 
     <hr>
 
@@ -76,6 +75,7 @@
 
     <div id="annualDividendsDisplay"></div>
     <div id="monthlyDividendsDisplay"></div>
+    <div id="weeklyDividendsDisplay"></div>
 
     <div id="paybackTimeDisplay"></div>
 
@@ -115,10 +115,6 @@
             var monthlyInterestDisplay = document.getElementById("monthlyInterestDisplay");
             monthlyInterestDisplay.innerHTML = "<p>Monthly Interest: $" + monthlyInterest.toFixed(2) + "</p>";
 
-            var dailyInterest = yearlyInterest / 365;
-            var dailyInterestDisplay = document.getElementById("dailyInterestDisplay");
-            dailyInterestDisplay.innerHTML = "<p>Daily Interest: $" + dailyInterest.toFixed(2) + "</p>";
-
             document.getElementById("dividendForm").style.display = "block";
         }
 
@@ -130,12 +126,16 @@
 
             var annualDividends = price * (apy / 100) * confirmLoanAmount / price;
             var monthlyDividends = annualDividends / 12;
+            var weeklyDividends = annualDividends / 52;
 
             var annualDividendsDisplay = document.getElementById("annualDividendsDisplay");
             annualDividendsDisplay.innerHTML = "<p> Annual Dividends: $" + annualDividends.toFixed(2) + "</p>";
 
             var monthlyDividendsDisplay = document.getElementById("monthlyDividendsDisplay");
             monthlyDividendsDisplay.innerHTML = "<p> Monthly Dividends: $" + monthlyDividends.toFixed(2) + "</p>";
+
+            var weeklyDividendsDisplay = document.getElementById("weeklyDividendsDisplay");
+            weeklyDividendsDisplay.innerHTML = "<p> Weekly Dividends: $" + weeklyDividends.toFixed(2) + "</p>";
 
             var totalDividends = monthlyDividends + dividendsPerMonth;
             var monthsToPayOff = confirmLoanAmount / totalDividends;
