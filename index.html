@@ -9,13 +9,13 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh; /* ensure a min height so content doesn't push up */
+            min-height: 100vh;
             flex-direction: column;
             font-size: 16px;
         }
 
         h2 {
-            text-align: center; /* Center-align the text */
+            text-align: center;
         }
 
         .form-group {
@@ -32,7 +32,6 @@
             font-size: 16px;
         }
 
-        /* Hide the dividendForm initially */
         #dividendForm {
             display: none;
         }
@@ -43,40 +42,43 @@
 
     <form id="marginForm" onsubmit="calculateMargin(event);">
         <div class="form-group">
+            <label for="currentEquity">Current Equity ($):</label>
+            <input type="number" id="currentEquity" step="0.01" required>
+        </div>
+        <div class="form-group">
             <label for="dividendsPerMonth">Dividends per Month ($):</label>
             <input type="number" id="dividendsPerMonth" step="0.01" required>
         </div>
         <div class="form-group">
-            <label for="interestRate">Interest Rate (% per year):</label>
+            <label for="interestRate">Margin Interest Rate<br>(% per year):</label>
             <input type="number" id="interestRate" step="any" required>
         </div>
-        <button type="submit"> Calculate Margin </button>
+        <button type="submit">Calculate Margin</button>
     </form>
 
     <div id="loanAmountDisplay"></div>
     <div id="interestFormDisplay"></div>
-
     <div id="yearlyInterestDisplay"></div>
     <div id="monthlyInterestDisplay"></div>
 
     <hr>
 
     <form id="dividendForm" onsubmit="calculateDividends(event);">
+        <h2> Margin Loan Reinvestment </h2>
         <div class="form-group">
-            <label for="price"> Stock Price ($): </label>
+            <label for="price">Stock Price ($):</label>
             <input type="number" id="price" step="0.01" required>
         </div>
         <div class="form-group">
-            <label for="apy"> Annual Percentage Yield (%): </label>
+            <label for="apy">Annual Percentage Yield (%):</label>
             <input type="number" id="apy" step="0.01" required>
         </div>
-        <button type="submit"> Calculate Dividends </button>
+        <button type="submit">Calculate Dividends</button>
     </form>
 
     <div id="annualDividendsDisplay"></div>
     <div id="monthlyDividendsDisplay"></div>
     <div id="weeklyDividendsDisplay"></div>
-
     <div id="paybackTimeDisplay"></div>
 
     <script>
@@ -86,34 +88,53 @@
         function calculateMargin(event) {
             event.preventDefault();
 
+            var currentEquity = parseFloat(document.getElementById("currentEquity").value);
             dividendsPerMonth = parseFloat(document.getElementById("dividendsPerMonth").value);
             var annualInterestRate = parseFloat(document.getElementById("interestRate").value) / 100;
 
+            // Calculate annual dividends
             var guaranteedDividendsPerYear = dividendsPerMonth * 12;
-            confirmLoanAmount = guaranteedDividendsPerYear / annualInterestRate;
 
+            // Calculate maximum loan amount based on 50% of equity
+            var maxLoanAmountEquityCapped = currentEquity * 0.5;
+
+            // Calculate maximum loan amount covered solely by dividends (uncapped by equity)
+            var maxLoanAmountDividendsCovered = guaranteedDividendsPerYear / annualInterestRate;
+
+            // Final recommended loan amount is the smaller of the two
+            confirmLoanAmount = Math.min(maxLoanAmountEquityCapped, maxLoanAmountDividendsCovered);
+
+            // Display recommended loan amount and maximum dividend-covered loan in the same section
             var loanAmountDisplay = document.getElementById("loanAmountDisplay");
-            loanAmountDisplay.innerHTML = "<h2>Loan Amount to Borrow on Margin</h2><p>The recommended loan amount for margin borrowing is: $" + confirmLoanAmount.toFixed(2) + "</p>";
+            loanAmountDisplay.innerHTML = `<h2>Loan Amount to Borrow on Margin</h2>
+                <p>Recommended Loan Amount (Capped at 50% of Equity): $${confirmLoanAmount.toFixed(2)}</p>
+                <p>Max Loan Covered by Dividends (without Equity Cap): $${maxLoanAmountDividendsCovered.toFixed(2)}</p>
+                <p>Proposed Debt-to-Equity Ratio: ${(confirmLoanAmount / currentEquity * 100).toFixed(2)}%</p>`;
 
+            // Create and show the interest form for further calculation
             var interestFormDisplay = document.getElementById("interestFormDisplay");
-            interestFormDisplay.innerHTML = '<form id="interestForm" onsubmit="calculateInterest(event);"> <div class="form-group"> <label for="confirmLoanAmount">Loan Amount ($):</label> <input type="number" id="confirmLoanAmount" step="0.01" required> </div> <button type="submit"> Calculate Interest </button> </form>';
-
+            interestFormDisplay.innerHTML = `<form id="interestForm" onsubmit="calculateInterest(event);">
+                <div class="form-group">
+                    <label for="confirmLoanAmount">Loan Amount ($):</label>
+                    <input type="number" id="confirmLoanAmount" step="0.01" value="${confirmLoanAmount.toFixed(2)}" required>
+                </div>
+                <button type="submit">Calculate Interest</button>
+            </form>`;
         }
 
         function calculateInterest(event) {
             event.preventDefault();
 
             confirmLoanAmount = parseFloat(document.getElementById("confirmLoanAmount").value);
-
             var annualInterestRate = parseFloat(document.getElementById("interestRate").value) / 100;
 
             var yearlyInterest = confirmLoanAmount * annualInterestRate;
             var yearlyInterestDisplay = document.getElementById("yearlyInterestDisplay");
-            yearlyInterestDisplay.innerHTML = "<p>Yearly Interest: $" + yearlyInterest.toFixed(2) + "</p>";
+            yearlyInterestDisplay.innerHTML = `<p>Yearly Margin Interest: $${yearlyInterest.toFixed(2)}</p>`;
 
             var monthlyInterest = yearlyInterest / 12;
             var monthlyInterestDisplay = document.getElementById("monthlyInterestDisplay");
-            monthlyInterestDisplay.innerHTML = "<p>Monthly Interest: $" + monthlyInterest.toFixed(2) + "</p>";
+            monthlyInterestDisplay.innerHTML = `<p>Monthly Margin Interest: $${monthlyInterest.toFixed(2)}</p>`;
 
             document.getElementById("dividendForm").style.display = "block";
         }
@@ -129,13 +150,13 @@
             var weeklyDividends = annualDividends / 52;
 
             var annualDividendsDisplay = document.getElementById("annualDividendsDisplay");
-            annualDividendsDisplay.innerHTML = "<p> Annual Dividends: $" + annualDividends.toFixed(2) + "</p>";
+            annualDividendsDisplay.innerHTML = `<p>Annual Dividends: $${annualDividends.toFixed(2)}</p>`;
 
             var monthlyDividendsDisplay = document.getElementById("monthlyDividendsDisplay");
-            monthlyDividendsDisplay.innerHTML = "<p> Monthly Dividends: $" + monthlyDividends.toFixed(2) + "</p>";
+            monthlyDividendsDisplay.innerHTML = `<p>Monthly Dividends: $${monthlyDividends.toFixed(2)}</p>`;
 
             var weeklyDividendsDisplay = document.getElementById("weeklyDividendsDisplay");
-            weeklyDividendsDisplay.innerHTML = "<p> Weekly Dividends: $" + weeklyDividends.toFixed(2) + "</p>";
+            weeklyDividendsDisplay.innerHTML = `<p>Weekly Dividends: $${weeklyDividends.toFixed(2)}</p>`;
 
             var totalDividends = monthlyDividends + dividendsPerMonth;
             var monthsToPayOff = confirmLoanAmount / totalDividends;
@@ -143,7 +164,7 @@
             var remainingMonths = Math.ceil(monthsToPayOff % 12);
 
             var paybackTimeDisplay = document.getElementById("paybackTimeDisplay");
-            paybackTimeDisplay.innerHTML = "<p>It will take approximately " + yearsToPayOff + " years and " + remainingMonths + " months to pay off the loan amount of $" + confirmLoanAmount.toFixed(2) + ", using your previous $" + dividendsPerMonth + " dividends per month, plus the new $" + monthlyDividends.toFixed(2) + " dividends per month. </p>";
+            paybackTimeDisplay.innerHTML = `<p>It will take approximately ${yearsToPayOff} years and ${remainingMonths} months to pay off the loan amount of $${confirmLoanAmount.toFixed(2)}, using your previous $${dividendsPerMonth} dividends per month, plus the new $${monthlyDividends.toFixed(2)} dividends per month.</p>`;
         }
     </script>
 </body>
