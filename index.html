@@ -95,8 +95,8 @@
             // Calculate annual dividends
             var guaranteedDividendsPerYear = dividendsPerMonth * 12;
 
-            // Calculate maximum loan amount based on 50% of equity
-            var maxLoanAmountEquityCapped = currentEquity * 0.5;
+            // Calculate maximum loan amount based on 25% of equity
+            var maxLoanAmountEquityCapped = currentEquity * 0.25;
 
             // Calculate maximum loan amount covered solely by dividends (uncapped by equity)
             var maxLoanAmountDividendsCovered = guaranteedDividendsPerYear / annualInterestRate;
@@ -107,7 +107,7 @@
             // Display recommended loan amount and maximum dividend-covered loan in the same section
             var loanAmountDisplay = document.getElementById("loanAmountDisplay");
             loanAmountDisplay.innerHTML = `<h2>Loan Amount to Borrow on Margin</h2>
-                <p>Recommended Loan Amount (Capped at 50% of Equity): $${confirmLoanAmount.toFixed(2)}</p>
+                <p>Recommended Loan Amount (Max at 25% of Equity): $${confirmLoanAmount.toFixed(2)}</p>
                 <p>Max Loan Covered by Dividends (without Equity Cap): $${maxLoanAmountDividendsCovered.toFixed(2)}</p>
                 <p>Proposed Debt-to-Equity Ratio: ${(confirmLoanAmount / currentEquity * 100).toFixed(2)}%</p>`;
 
